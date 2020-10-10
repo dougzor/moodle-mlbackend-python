@@ -49,13 +49,5 @@ setup(
     package_data={
         'moodlemlbackend': ['VERSION']
     },
-    install_requires=[
-        'matplotlib>=3.0,<3.1',
-        'numpy>=1.16.0,<1.17',
-        'scikit-learn>=0.21,<0.22',
-        'joblib>=0.13.0,<0.14',
-        'tensorflow>=1.14.0,<1.15',
-        'flask>=1.0.2,<1.1',
-        'boto3>=1.9.0,<1.10',
-    ],
+    install_requires=open('requirements.txt').readlines(),
 )
