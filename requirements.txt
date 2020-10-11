@@ -6,3 +6,6 @@ tensorflow
 flask
 boto3
 pytest
+compose
+evalml
+featuretools
