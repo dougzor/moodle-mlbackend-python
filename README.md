@@ -31,3 +31,11 @@ When the python process is called directly the moduls read directly from the sys
 1) All  REST calls supply a Basic Authorization header which the Flask apps looks in the `MOODLE_MLBACKEND_PYTHON_USERS` env vars for logins to use
 2) Flask app can be configured to be backed by local storage or Amazon S3
 3) Flask app REST calls can then have data pulled from either source, implies data is saved there by the caller before this app being called
+
+## Notes ##
+* Python 3.8 supports makes the TensorFlow library only support up tp version 2.2 and the library currently has version 1.5 only calls. We get around this by doing
+
+```
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+```

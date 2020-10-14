@@ -5,7 +5,8 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from sklearn import preprocessing
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np
 
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
