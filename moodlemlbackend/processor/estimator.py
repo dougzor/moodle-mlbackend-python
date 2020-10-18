@@ -43,7 +43,7 @@ EXPORT_MODEL_FILENAME = 'model.json'
 class Estimator(object):
     """Abstract estimator class"""
 
-    def __init__(self, modelid, directory):
+    def __init__(self, modelid, directory, dataset=None):
 
         self.X = None
         self.y = None
@@ -74,6 +74,16 @@ class Estimator(object):
         np.set_printoptions(precision=5)
         np.set_printoptions(threshold=np.inf)
         np.seterr(all='raise')
+
+        self.aucs = []
+        self.roc_curve_plot = chart.RocCurve(self.logsdir, 2)
+
+        if dataset:
+            meta = self.get_metadata(dataset)
+            self.n_features = meta['n_features']
+            self.classes = meta['classes']
+            self.n_classes = meta['n_classes']
+            self.is_binary = self.n_classes == 2
 
     @staticmethod
     def warnings_to_log(message, category, filename, lineno, file=None,
@@ -200,66 +210,6 @@ class Estimator(object):
         self.recalls = []
         self.f1_scores = []
 
-
-class Classifier(Estimator):
-    """General classifier"""
-
-    def __init__(self, modelid, directory, dataset=None):
-        super(Classifier, self).__init__(modelid, directory)
-
-        self.aucs = []
-        self.roc_curve_plot = chart.RocCurve(self.logsdir, 2)
-
-        if dataset:
-            meta = self.get_metadata(dataset)
-            self.n_features = meta['n_features']
-            self.classes = meta['classes']
-            self.n_classes = meta['n_classes']
-            self.is_binary = self.n_classes == 2
-
-        self.tensor_logdir = self.get_tensor_logdir()
-        if os.path.isdir(self.tensor_logdir) is False:
-            if os.makedirs(self.tensor_logdir) is False:
-                raise OSError('Directory ' + self.tensor_logdir +
-                              ' can not be created.')
-
-    def get_classifier(self, X, y, initial_weights=False):
-        """Gets the classifier"""
-
-        try:
-            n_rows = X.shape[0]
-        except AttributeError:
-            # No X during model import.
-            # n_rows value does not really matter during import.
-            n_rows = 1
-
-        if n_rows < 1000:
-            batch_size = n_rows
-        else:
-            # A min batch size of 1000.
-            x_tenpercent = int(n_rows / 10)
-            batch_size = max(1000, x_tenpercent)
-
-        # We need ~10,000 iterations so that the 0.5 learning rate decreases
-        # to 0.01 with a decay rate of 0.96. We use 12,000 so that the
-        # algorithm has some time to finish the training on lr < 0.01.
-        starter_learning_rate = 0.5
-        if n_rows > batch_size:
-            n_epoch = int(12000 / (n_rows / batch_size))
-        else:
-            # Less than 1000 rows (1000 is the minimum batch size we defined).
-            # We don't need to iterate than many times if we have less than
-            # 1000 records, starting with 0.5 the learning rate will get to
-            # ~0.05 in 5000 epochs.
-            n_epoch = 5000
-
-        n_classes = self.n_classes
-        n_features = self.n_features
-
-        return tensor.TF(n_features, n_classes, n_epoch, batch_size,
-                         starter_learning_rate, self.get_tensor_logdir(),
-                         initial_weights=initial_weights)
-
     def train(self, X_train, y_train, classifier=False):
         """Train the classifier with the provided training data"""
 
@@ -275,6 +225,13 @@ class Classifier(Estimator):
 
     def train_dataset(self, filepath):
         """Train the model with the provided dataset"""
+        # Make sure we set default variables
+        meta = self.get_metadata(filepath)
+        self.n_features = meta['n_features']
+        self.classes = meta['classes']
+        self.n_classes = meta['n_classes']
+        self.is_binary = self.n_classes == 2
+
         [self.X, self.y] = self.get_labelled_samples(filepath)
 
         if len(np.unique(self.y)) < self.n_classes:
@@ -331,7 +288,7 @@ class Classifier(Estimator):
                                            probabilities)).T.tolist()
 
         return result
-
+    
     def evaluate_dataset(self, filepath, min_score=0.6,
                          accepted_deviation=0.02, n_test_runs=100,
                          trained_model_dir=False):
@@ -503,11 +460,10 @@ class Classifier(Estimator):
             try:
                 result['auc'] = np.mean(self.aucs)
                 result['auc_deviation'] = np.std(self.aucs)
-            except Exception:
+            except:
                 # No worries.
                 result['auc'] = 0.0
                 result['auc_deviation'] = 1.0
-                pass
 
         result['accuracy'] = avg_accuracy
         result['precision'] = avg_precision
@@ -544,6 +500,54 @@ class Classifier(Estimator):
             result['status'] = LOW_SCORE + NOT_ENOUGH_DATA
 
         return result
+
+class Classifier(Estimator):
+    """General classifier"""
+
+    def __init__(self, modelid, directory, dataset=None):
+        super(Classifier, self).__init__(modelid, directory, dataset=dataset)
+
+        self.tensor_logdir = self.get_tensor_logdir()
+        if os.path.isdir(self.tensor_logdir) is False:
+            if os.makedirs(self.tensor_logdir) is False:
+                raise OSError('Directory ' + self.tensor_logdir +
+                              ' can not be created.')
+
+    def get_classifier(self, X, y, initial_weights=False):
+        """Gets the classifier"""
+        try:
+            n_rows = X.shape[0]
+        except AttributeError:
+            # No X during model import.
+            # n_rows value does not really matter during import.
+            n_rows = 1
+
+        if n_rows < 1000:
+            batch_size = n_rows
+        else:
+            # A min batch size of 1000.
+            x_tenpercent = int(n_rows / 10)
+            batch_size = max(1000, x_tenpercent)
+
+        # We need ~10,000 iterations so that the 0.5 learning rate decreases
+        # to 0.01 with a decay rate of 0.96. We use 12,000 so that the
+        # algorithm has some time to finish the training on lr < 0.01.
+        starter_learning_rate = 0.5
+        if n_rows > batch_size:
+            n_epoch = int(12000 / (n_rows / batch_size))
+        else:
+            # Less than 1000 rows (1000 is the minimum batch size we defined).
+            # We don't need to iterate than many times if we have less than
+            # 1000 records, starting with 0.5 the learning rate will get to
+            # ~0.05 in 5000 epochs.
+            n_epoch = 5000
+
+        n_classes = self.n_classes
+        n_features = self.n_features
+
+        return tensor.TF(n_features, n_classes, n_epoch, batch_size,
+                         starter_learning_rate, self.get_tensor_logdir(),
+                         initial_weights=initial_weights)
 
     def store_classifier(self, trained_classifier):
         """Stores the classifier and saves a checkpoint of the tensors state"""
