@@ -8,7 +8,6 @@ def get_test_data():
 def test_tf_model_init(tmp_path):
     """ Can we even init a model?"""
     data = get_test_data()
-    # All columns but the last one.
     x = data.data
     y = data.target
 
