@@ -28,6 +28,8 @@ from ..model import tensor
 from .. import chart
 
 
+logger = logging.getLogger(__name__)
+
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 OK = 0
@@ -89,7 +91,7 @@ class Estimator(object):
     def warnings_to_log(message, category, filename, lineno, file=None,
                         line=None):
         """showwarnings overwritten"""
-        logging.warning('%s:%s: %s:%s', filename, lineno,
+        logger.warning('%s:%s: %s:%s', filename, lineno,
                         category.__name__, message)
 
     def get_runid(self):
@@ -308,10 +310,10 @@ class Estimator(object):
                               'match the targetclasses from the header']
             return result
 
-        logging.info('Number of samples by y value: %s', str(counts))
+        logger.info('Number of samples by y value: %s', str(counts))
         balanced_classes = self.check_classes_balance(counts)
         if balanced_classes is not False:
-            logging.warning(balanced_classes)
+            logger.warning(balanced_classes)
 
         # Check that we have samples belonging to all classes.
         for i in range(len(counts)):
@@ -346,7 +348,7 @@ class Estimator(object):
                 self.rate_prediction(classifier, X_test, y_test)
 
         # Store the roc curve.
-        logging.info("Figure stored in " + self.roc_curve_plot.store())
+        logger.info("Figure stored in " + self.roc_curve_plot.store())
 
         # Return results.
         result = self.get_evaluation_results(min_score, accepted_deviation)
@@ -357,17 +359,17 @@ class Estimator(object):
         result['runid'] = int(self.get_runid())
 
         if self.is_binary:
-            logging.info("AUC: %.2f%%", result['auc'])
-            logging.info("AUC standard deviation: %.4f",
+            logger.info("AUC: %.2f%%", result['auc'])
+            logger.info("AUC standard deviation: %.4f",
                          result['auc_deviation'])
 
-        logging.info("Accuracy: %.2f%%", result['accuracy'] * 100)
-        logging.info("Precision (predicted elements that are real): %.2f%%",
+        logger.info("Accuracy: %.2f%%", result['accuracy'] * 100)
+        logger.info("Precision (predicted elements that are real): %.2f%%",
                      result['precision'] * 100)
-        logging.info("Recall (real elements that are predicted): %.2f%%",
+        logger.info("Recall (real elements that are predicted): %.2f%%",
                      result['recall'] * 100)
-        logging.info("Score: %.2f%%", result['score'] * 100)
-        logging.info("Score standard deviation: %.4f",
+        logger.info("Score: %.2f%%", result['score'] * 100)
+        logger.info("Score standard deviation: %.4f",
                      result['score_deviation'])
 
         return result
