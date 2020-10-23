@@ -4,3 +4,4 @@ tests
 dist
 .vscode
 .pytest_cache
+build/

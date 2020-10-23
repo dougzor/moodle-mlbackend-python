@@ -21,6 +21,7 @@ evalml = "*"
 featuretools = "*"
 Flask = "*"
 pylint = "*"
+gunicorn = "==19.10.0"
 
 [requires]
 python_version = "3.7"

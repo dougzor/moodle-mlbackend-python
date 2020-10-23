@@ -5,8 +5,6 @@ RUN mkdir -p /usr/data
 COPY test_data/* /usr/data
 COPY . /usr/src/app 
 RUN pip install /usr/src/app
-ENV FLASK_APP=/usr/src/app/webapp.py
 ENV MOODLE_MLBACKEND_PYTHON_DIR=/usr/data
-RUN ls
-EXPOSE 5000
-RUN flask run
+EXPOSE 8080
+CMD cd /usr/src/app/ && gunicorn -w 2 -b :8080 webapp:app
