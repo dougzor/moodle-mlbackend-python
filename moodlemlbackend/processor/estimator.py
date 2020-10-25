@@ -98,22 +98,6 @@ class Estimator(object):
         """Returns the run id"""
         return self.runid
 
-    def load_classifier(self, model_dir=False):
-        """Loads a previously stored classifier"""
-
-        if model_dir is False:
-            model_dir = self.persistencedir
-
-        classifier_filepath = os.path.join(
-            model_dir, PERSIST_FILENAME)
-        return joblib.load(classifier_filepath)
-
-    def store_classifier(self, trained_classifier):
-        """Stores the provided classifier"""
-        classifier_filepath = os.path.join(
-            self.persistencedir, PERSIST_FILENAME)
-        joblib.dump(trained_classifier, classifier_filepath)
-
     @staticmethod
     def get_labelled_samples(filepath):
         """Extracts labelled samples from the provided data file"""
@@ -657,3 +641,19 @@ class Classifier(Estimator):
     def get_tensor_logdir(self):
         """Returns the directory to store tensorflow framework logs"""
         return os.path.join(self.logsdir, 'tensor')
+
+    def load_classifier(self, model_dir=False):
+        """Loads a previously stored classifier"""
+
+        if model_dir is False:
+            model_dir = self.persistencedir
+
+        classifier_filepath = os.path.join(
+            model_dir, PERSIST_FILENAME)
+        return joblib.load(classifier_filepath)
+
+    def store_classifier(self, trained_classifier):
+        """Stores the provided classifier"""
+        classifier_filepath = os.path.join(
+            self.persistencedir, PERSIST_FILENAME)
+        joblib.dump(trained_classifier, classifier_filepath)
