@@ -133,9 +133,9 @@ class Estimator(object):
         X = np.array(samples[:, 0:-1])
 
         # Only the last one and as integer.
-        y = np.array(samples[:, -1:]).astype(int)
+        y = np.concatenate(np.array(samples[:, -1:]).astype(int))
 
-        return [X, y]
+        return X, y
 
     @staticmethod
     def get_unlabelled_samples(filepath):
@@ -220,7 +220,7 @@ class Estimator(object):
             classifier = self.get_classifier(X_train, y_train)
 
         # Fit the training set. y should be an array-like.
-        classifier.fit(X_train, y_train[:, 0])
+        classifier.fit(X_train, y_train)
 
         # Returns the trained classifier.
         return classifier
@@ -234,7 +234,7 @@ class Estimator(object):
         self.n_classes = meta['n_classes']
         self.is_binary = self.n_classes == 2
 
-        [self.X, self.y] = self.get_labelled_samples(filepath)
+        self.X, self.y = self.get_labelled_samples(filepath)
 
         if len(np.unique(self.y)) < self.n_classes:
             # We need samples belonging to all different classes.
@@ -296,7 +296,7 @@ class Estimator(object):
                          trained_model_dir=False):
         """Evaluate the model using the provided dataset"""
 
-        [self.X, self.y] = self.get_labelled_samples(filepath)
+        self.X, self.y = self.get_labelled_samples(filepath)
 
         # Classes balance check.
         y_array = np.array(self.y.T[0])
@@ -503,8 +503,34 @@ class Estimator(object):
 
         return result
 
+    def classifier_exists(self):
+        """Checks if there is a previously stored classifier"""
+
+        classifier_dir = os.path.join(self.persistencedir,
+                                      PERSIST_FILENAME)
+        return os.path.isfile(classifier_dir)
+
+    def get_classifier(self, X, y, initial_weights=False):
+        """Gets the classifier"""
+        raise NotImplementedError()
+
+    def load_classifier(self, model_dir=False):
+        """Loads a previously stored classifier"""
+        raise NotImplementedError()
+
+    def store_classifier(self, trained_classifier):
+        """Stores the provided classifier"""
+        raise NotImplementedError()
+    
+    def export_classifier(self, exporttmpdir):
+        raise NotImplementedError()
+
+    def import_classifier(self, importdir):
+        raise NotImplementedError()
+
+
 class Classifier(Estimator):
-    """General classifier"""
+    """Tensorflow Neural Net classifier"""
 
     def __init__(self, modelid, directory, dataset=None):
         super(Classifier, self).__init__(modelid, directory, dataset=dataset)
@@ -627,13 +653,6 @@ class Classifier(Estimator):
                                          initial_weights=import_vars)
 
         self.store_classifier(classifier)
-
-    def classifier_exists(self):
-        """Checks if there is a previously stored classifier"""
-
-        classifier_dir = os.path.join(self.persistencedir,
-                                      PERSIST_FILENAME)
-        return os.path.isfile(classifier_dir)
 
     def get_tensor_logdir(self):
         """Returns the directory to store tensorflow framework logs"""

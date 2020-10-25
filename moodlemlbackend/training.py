@@ -5,7 +5,7 @@ import json
 import time
 
 from moodlemlbackend.processor import estimator
-
+from moodlemlbackend.processor.eval_estimator import EvalClassifier
 
 def training():
     """Trains a ML classifier."""
@@ -28,8 +28,8 @@ def training():
     directory = sys.argv[2]
     dataset = sys.argv[3]
 
-    classifier = estimator.Classifier(modelid, directory, dataset)
-
+    #classifier = estimator.Classifier(modelid, directory, dataset)
+    classifier = EvalClassifier(modelid, directory, dataset)
     result = classifier.train_dataset(dataset)
 
     print(json.dumps(result))
