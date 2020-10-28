@@ -1,6 +1,8 @@
+from .base import BaseModel
+
 import evalml
 
-class EvalMlRunner(object):
+class EvalMlModel(BaseModel):
     def __init__(self):
         self.best_pipeline = None
 

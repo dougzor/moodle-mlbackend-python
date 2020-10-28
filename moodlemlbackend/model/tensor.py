@@ -1,4 +1,6 @@
 """Tensorflow classifier"""
+from .base import BaseModel
+
 
 import math
 import os
@@ -11,7 +13,7 @@ import numpy as np
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 
-class TF(object):
+class TF(BaseModel):
     """Tensorflow classifier"""
 
     def __init__(self, n_features, n_classes, n_epoch, batch_size,

@@ -1,14 +1,14 @@
 import numpy as np
 import evalml
 from sklearn.datasets import load_breast_cancer
-from moodlemlbackend.model.eval import EvalMlRunner
+from moodlemlbackend.model import EvalMlModel
 
 def get_test_data():
     return load_breast_cancer()
 
 
 def test_it():
-    runner = EvalMlRunner()
+    runner = EvalMlModel()
 
     data = get_test_data()
     x = data.data

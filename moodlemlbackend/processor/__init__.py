@@ -1,2 +1,2 @@
-from .estimator import Estimator
-from .eval_estimator import EvalClassifier
+from .estimator import Classifier as TFEstimator
+from .eval_estimator import EvalClassifier as EvalMLEstimator

@@ -1,14 +1,14 @@
-from .estimator import Estimator
+from .base import BaseEstimater
 from evalml.pipelines.pipeline_base import PipelineBase
-from moodlemlbackend.model.eval import EvalMlRunner
+from moodlemlbackend.model import EvalMlModel
 import os
 
-class EvalClassifier(Estimator):
+class EvalClassifier(BaseEstimater):
     """EvalML based classifier"""
 
     def get_classifier(self, X, y, initial_weights=False):
         """Gets the classifier"""
-        runner = EvalMlRunner()
+        runner = EvalMlModel()
         self.best_pipeline = runner.fit(X, y)
         return self.best_pipeline
 

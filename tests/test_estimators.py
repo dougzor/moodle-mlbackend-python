@@ -1,5 +1,4 @@
-from moodlemlbackend.processor.estimator import Classifier
-from moodlemlbackend.processor.eval_estimator import EvalClassifier
+from moodlemlbackend.processor import EvalMLEstimator, TFEstimator
 import os
 
 def get_test_data_path():
@@ -8,13 +7,13 @@ def get_test_data_path():
 def test_tf_classifer(tmp_path):
     """ Can we even init a model?"""
     test_data_file = get_test_data_path()
-    classifier = Classifier(1, tmp_path)
+    classifier = TFEstimator(1, tmp_path)
     result = classifier.train_dataset(test_data_file)
     assert result['status'] == 0
 
 def test_eval_classifer(tmp_path):
     """ Can we even init a model?"""
     test_data_file = get_test_data_path()
-    classifier = EvalClassifier(1, tmp_path)
+    classifier = EvalMLEstimator(1, tmp_path)
     result = classifier.train_dataset(test_data_file)
     assert result['status'] == 0
