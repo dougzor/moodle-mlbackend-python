@@ -16,8 +16,8 @@ def fit_tf_model(X_train, y_train, tmp_path):
     
 
 def fit_eval_model(X_train, y_train):
-    runner = load_breast_cancer()
-    best_pipeline = runner.fit(X_train, y_train)
+    runner = EvalMlModel()
+    best_pipeline = runner.fit(X_train.values, y_train.values)
     return best_pipeline
 
 

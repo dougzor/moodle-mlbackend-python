@@ -1,17 +1,18 @@
+import evalml
 from .base import BaseModel
 
-import evalml
 
 class EvalMlModel(BaseModel):
     def __init__(self):
         self.best_pipeline = None
+        self.automl = None
 
     def build_graph(self, initial_weights=False):
         pass
 
     def fit(self, X, y):
         """Fits provided data into the session"""
-        automl = evalml.AutoMLSearch(
+        self.automl = evalml.AutoMLSearch(
             problem_type='binary',
             objective='accuracy binary',
             additional_objectives=['auc', 'balanced accuracy binary', 'precision'],
@@ -19,8 +20,8 @@ class EvalMlModel(BaseModel):
             optimize_thresholds=True
         )
 
-        automl.search(X, y)
-        self.best_pipeline = automl.best_pipeline
+        self.automl.search(X, y)
+        self.best_pipeline = self.automl.best_pipeline
         self.best_pipeline.fit(X, y)
         return self.best_pipeline
 

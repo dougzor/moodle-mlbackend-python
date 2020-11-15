@@ -22,6 +22,8 @@ featuretools = "*"
 Flask = "*"
 pylint = "*"
 gunicorn = "==19.10.0"
+jupyter = "*"
+ipywidgets = "*"
 
 [requires]
 python_version = "3.7"
