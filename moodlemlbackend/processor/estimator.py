@@ -65,9 +65,13 @@ class Classifier(BaseEstimater):
         n_classes = self.n_classes
         n_features = self.n_features
 
-        return TFModel(n_features, n_classes, n_epoch, batch_size,
-                       starter_learning_rate, self.get_tensor_logdir(),
-                       initial_weights=initial_weights)
+        model = TFModel(n_features, n_classes, n_epoch, batch_size,
+                        starter_learning_rate, self.get_tensor_logdir(),
+                        initial_weights=initial_weights)
+        
+        model.set_tensor_logdir(self.get_tensor_logdir())
+
+        return model
 
     def store_classifier(self, trained_classifier):
         """Stores the classifier and saves a checkpoint of the tensors state"""

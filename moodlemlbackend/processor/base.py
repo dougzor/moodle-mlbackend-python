@@ -232,9 +232,9 @@ class BaseEstimater(object):
             # Not previously trained.
             classifier = False
 
-        trained_classifier = self.train(self.X, self.y, classifier)
+        self.trained_classifier = self.train(self.X, self.y, classifier=classifier)
 
-        self.store_classifier(trained_classifier)
+        self.store_classifier(self.trained_classifier)
 
         result = dict()
         result['status'] = OK
