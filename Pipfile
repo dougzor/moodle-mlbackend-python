@@ -7,6 +7,8 @@ verify_ssl = true
 pylint = "*"
 pytest = "*"
 wrapt = {editable = true, path = "."}
+jupyter = "*"
+ipywidgets = "*"
 
 [packages]
 matplotlib = "*"
@@ -16,14 +18,10 @@ joblib = "*"
 tensorflow = "<2.0"
 boto3 = "*"
 pytest = "*"
-compose = "*"
-evalml = "*"
-featuretools = "*"
+evalml = "==0.14.1"
 Flask = "*"
 pylint = "*"
 gunicorn = "==19.10.0"
-jupyter = "*"
-ipywidgets = "*"
 
 [requires]
 python_version = "3.7"
