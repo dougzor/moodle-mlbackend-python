@@ -5,6 +5,23 @@ This package is used by Moodle's mlbackend_python plugin.
 
 Info about packaging a new version in _readme_moodle.md: https://github.com/moodlehq/moodle-mlbackend-python/blob/master/readme_moodle.md
 
+## Requirements ##
+* Python 3.7
+
+## Setup ##
+Setup a virtual enviornment and install the package locally
+```
+virtualenv -p /usr/local/opt/python@3.7/bin/python3 venv
+pip install -r requirements.txt
+python setup.py develop
+```
+
+## Tests ##
+Run the tests and generate a coverage report
+```
+pytest --cov=moodlemlbackend tests/
+```
+
 ## How Moodle Integrates and uses this library ##
 
 The core of the code in the Moodle PHP backend is located here: https://github.com/moodle/moodle/tree/master/lib/mlbackend/python
